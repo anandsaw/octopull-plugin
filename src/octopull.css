@@ -1,0 +1,36 @@
+.octopull-header-message {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	min-width: 1000px;
+	background-color: #f5f5f5;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.octopull-header-message.octopull-error {
+	background-color: #d9534f;
+	color: #fff;
+}
+
+.octopull-button {
+	display: inline-block;
+	padding: 4px 8px;
+	font-weight: bold;
+	line-height: 20px;
+	color: #fff;
+	text-align: center;
+	border-radius: 3px;
+	border: 0px;
+	background-color: #999;
+	outline: none;
+}
+
+.octopull-header-message.octopull-error .octopull-button {
+	background-color: #bd2c00;
+}
+
+.octopull-header-message .octopull-message {
+	padding: 4px 8px;
+	display: inline-block;
+	height: 28px;
+	line-height: 20px;
+}

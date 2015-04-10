@@ -1,0 +1,44 @@
+{
+  "name": "octopull-plugin",
+  "version": "1.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Reinier Hartog <r.m.hartog@hotmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "^9.0.3",
+    "browserify-shim": "^3.8.3",
+    "grunt": "^0.4.5",
+    "grunt-browserify": "^3.5.0",
+    "grunt-bumpx": "^0.2.1",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-compress": "^0.13.0",
+    "grunt-contrib-copy": "^0.8.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "remapify": "^1.4.4"
+  },
+  "dependencies": {
+    "URIjs": "^1.14.2",
+    "eventemitter2": "^0.4.14",
+    "inherits": "^2.0.1",
+    "jquery": "^2.1.3",
+    "jquery.lifecycle": "^0.1.1",
+    "knockout": "^3.3.0",
+    "q": "^1.2.0"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "libs/arrive.min.js": {
+      "depends": [
+        "jquery:jQuery"
+      ]
+    }
+  }
+}
