@@ -1,36 +1,70 @@
-.octopull-header-message {
-	padding-top: 10px;
-	padding-bottom: 10px;
-	min-width: 1000px;
-	background-color: #f5f5f5;
-	border-bottom: 1px solid #e5e5e5;
+.octopull-message {
+	vertical-align: middle;
 }
 
-.octopull-header-message.octopull-error {
-	background-color: #d9534f;
-	color: #fff;
+.octopull-message-content {
+	float: left;
 }
-
-.octopull-button {
-	display: inline-block;
-	padding: 4px 8px;
+	
+.octopull-message-title {
 	font-weight: bold;
-	line-height: 20px;
-	color: #fff;
-	text-align: center;
-	border-radius: 3px;
-	border: 0px;
-	background-color: #999;
-	outline: none;
+	font-size: 1.1em;
+	display: block;
 }
 
-.octopull-header-message.octopull-error .octopull-button {
-	background-color: #bd2c00;
+.octopull-message-body {
+	vertical-align: middle;
 }
 
-.octopull-header-message .octopull-message {
-	padding: 4px 8px;
-	display: inline-block;
-	height: 28px;
-	line-height: 20px;
+.octopull-message-actions {
+	float: right;
+	line-height: 40px;
+	vertical-align: middle;
+}
+
+.octopull-message-actions .btn {
+	display: inline;
+}
+
+div.octopull-message-error {
+	background-color: #ffdddd;
+}
+
+div.octopull-message-warning {
+	background-color: #ffefc6;
+}
+
+div.octopull-message-info {
+	background-color: #e8f0f8;
+}
+
+.octopull-loader {
+	height: 0px;
+	overflow: hidden;
+	background-color: #adcff5;
+	-webkit-transition: height 0.1s ease-in;
+}
+
+.octopull-loader.loading {
+	height: 5px;
+	-webkit-transition: height 0.1s ease-out;
+}
+
+@-webkit-keyframes indeterminate {
+	0% { left: 0%; width: 0%; }
+    33% { left: 0%; width: 50%; }
+	66% { left: 50%; width: 50%; }
+	100% { left: 100%; width: 0%; }
+}
+
+.octopull-loader.loading .octopull-loader-bar {
+	position: relative;
+	height: 50px;
+	left: 10%;
+	width: 30%;
+	background-color: #3f8af5;
+	-webkit-animation-name: indeterminate;
+	-webkit-animation-duration: 4s;
+    -webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: ease;
 }

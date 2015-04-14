@@ -17,20 +17,24 @@ module.exports = function(grunt) {
 		copy: {
 			chrome: {
 				files: [
-					{ expand: true, cwd: 'src/chrome/', src: ['*'], dest: 'tmp/chrome/', filter: 'isFile' },
+					{ expand: true, cwd: 'src/chrome/', src: ['manifest.json'], dest: 'tmp/chrome/', filter: 'isFile' },
 					{ expand: true, cwd: 'src/', src: ['templates/**'], dest: 'tmp/chrome/', filter: 'isFile' },
-					{ expand: true, cwd: 'src/', src: ['**.css'], dest: 'tmp/chrome/', filter: 'isFile' },
-					{ expand: true, cwd: 'src/', src: ['**.js'], dest: 'tmp/chrome/', filter: 'isFile' }
+					{ expand: true, cwd: 'src/', src: ['**.css'], dest: 'tmp/chrome/', filter: 'isFile' }
 				]
 			}
 		},
 		browserify: {
 			chrome: {
-				src: 'src/octopull.js',
-				dest: 'tmp/chrome/octopull.js'
+				options: {
+					require: [ './src/chrome/templates.js:templates' ]
+				},
+				files: {
+					'tmp/chrome/octopull.js': ['./src/octopull.js']
+				}
 			},
-			browserifyOptions: {
-				debug: true
+			options: {
+				watch: false,
+				sourceMaps: true
 			}
 		},
 		compress: {

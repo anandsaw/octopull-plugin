@@ -4,6 +4,7 @@ var EventEmitter = require('eventemitter2').EventEmitter2;
 
 var DiffView = require('./diff-view.js');
 var RepoActionsView = require('./repo-actions-view.js');
+var MessagesView = require('./msg-view.js');
 
 global.$ = $;
 require('jquery.lifecycle');
@@ -19,6 +20,8 @@ function OctopullView() {
 	
 	self.diffView = null;
 	self.repoActions = new RepoActionsView();
+	self._progressBar = null;
+	self._msgView = null;
 	
 	$(document).ready(self.onLoad.bind(self));
 	$(document).leave("[data-loader-id]", { fireOnAttributesModification: true }, function() {
@@ -79,6 +82,8 @@ OctopullView.prototype.onLoad = function() {
 	this._hookLoader(".context-loader");
 	
 	this.createDiffView();
+	this.createMessageView();
+	this.createProgressBar();
 	
 	this._loaded = true;
 	this.emit("load", this.context());
@@ -150,6 +155,35 @@ OctopullView.prototype.removeDiffView = function() {
 		this.diffView.remove();
 		this.diffView = null;
 	}
+}
+
+OctopullView.prototype.clear = function() {
+	this.repoActions.clear();
+}
+
+OctopullView.prototype.createProgressBar = function() {
+	if (this._progressBar == null) {
+		this._progressBar = $("<div>").addClass("octopull-loader").prepend($("<div>").addClass("octopull-loader-bar"));
+		$(".header").after(this._progressBar);
+	}
+}
+
+OctopullView.prototype.showProgressBar = function() {
+	this._progressBar.addClass("loading");
+}
+
+OctopullView.prototype.hideProgressBar = function() {
+	this._progressBar.removeClass("loading");
+}
+
+OctopullView.prototype.createMessageView = function() {
+	if (this._msgView == null) {
+		this._msgView = new MessagesView();
+	}
+}
+
+OctopullView.prototype.addMessage = function(message) {
+	this._msgView.addMessage(message);
 }
 
 module.exports = OctopullView;
