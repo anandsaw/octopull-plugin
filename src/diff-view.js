@@ -4,6 +4,8 @@ var inherits = require('inherits');
 var EventEmitter = require('eventemitter2').EventEmitter2;
 var templates = require('templates');
 
+var agent = require('./agent.js').get();
+
 global.$ = $;
 require('../libs/arrive.min.js');
 
@@ -23,13 +25,25 @@ function ViolationViewModel(diff, warning) {
 	self.message = warning.message;
 		
 	self.comment = function() {
-		
+		agent.request({
+			url: diff.createCommentURL,
+			method: 'POST',
+			data: {
+					repo: diff.repo,
+					pullRequest: diff.pullRequestNumber,
+					commit: warning.commit,
+					warningId: warning.warningId,
+					position: warning.position
+			}
+		});
 	};
 }
 
-function DiffViewModel() {
+function DiffViewModel(diff) {
 	var self = this;
+	self.createCommentURL = diff.createCommentURL;
 	self.warnings = ko.observableArray([]);
+	self.addWarnings(diff.warnings);
 	
 	self.warningsForFileLineRevision = function(path, line, rev) {
 		return ko.pureComputed(function() {
@@ -69,7 +83,7 @@ function DiffLineViewModel(diff, path, line, rev, position) {
 	});
 	
 	self.getWarnings = ko.pureComputed(function() {
-		diff.warningsForFileLineRevision(path, line, rev);
+		return diff.warningsForFileLineRevision(path, line, rev)();
 	});
 		
 	self.hasWarnings = ko.pureComputed(function() {
@@ -79,14 +93,14 @@ function DiffLineViewModel(diff, path, line, rev, position) {
 }
 // ** /DiffViewModel ** //
 
-function DiffView(element, base, head) {
+function DiffView(element, diff) {
 	EventEmitter.call(this);
 	var self = this;
 	
 	self._element = element;
-	self._base = base;
-	self._head = head;
-	self._viewModel = new DiffViewModel();
+	self._base = diff.base;
+	self._head = diff.head;
+	self._viewModel = new DiffViewModel(diff);
 	
 	self.attach();
 }
@@ -108,6 +122,7 @@ DiffView.prototype.attach = function() {
 			self.prepareRow(row, revisions);
 		});
 		$(element).arrive(".diff-table > tbody > tr", function() {
+			console.log('arrived');
 			var row = this;
 			self.prepareRow(row, revisions);
 		});
@@ -146,9 +161,14 @@ DiffView.prototype.attachLineNumber = function(line, path) {
 	if (rev) {
 		templates.get('line-dot.html').then(function(template) {
 			$(line).prepend($(template));
-			ko.applyBindings(new DiffLineViewModel(self._viewModel, path, lineNumber, rev, position), line);
+			var lineVM = new DiffLineViewModel(self._viewModel, path, lineNumber, rev, position);
+			ko.applyBindings(lineVM, line);
 		});
 	}
+}
+
+DiffView.prototype.clear = function() {
+	this._viewModel.warnings([]);
 }
 
 DiffView.prototype.remove = function() {

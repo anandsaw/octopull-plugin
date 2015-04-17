@@ -7,6 +7,10 @@ var EventEmitter = require('eventemitter2').EventEmitter2;
 // viewmodel
 function MessagesViewModel() {
 	this.messages = ko.observableArray();
+	
+	this.remove = function(index) {
+		this.messages.splice(index, 1);
+	}
 }
 // end viewmodel
 

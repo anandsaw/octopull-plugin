@@ -1,8 +1,13 @@
 <div data-bind="foreach: messages">
 	<div class="header octopull-message" data-bind="css: 'octopull-message-' + $data.level">
 		<div class="container">
-			<div class="octopull-message-actions" data-bind="foreach: $data.actions">
+			<div class="octopull-message-actions">
+				<!-- ko foreach: $data.actions -->
 				<a data-bind="attr: { href: $data.href }, text: $data.title" class="btn btn-sm"></a>
+				<!-- /ko -->
+				<span class="tooltipped tooltipped-s" style="padding-left: 10px;" aria-label="Dismiss">
+					<a href="#" class="muted-link octicon octicon-remove-close" data-bind="click: function() { $parent.remove($index); }"></a>
+				</span>
 			</div>
 			<div class="octopull-message-content">
 				<span class="octopull-message-title" data-bind="text: $data.title"></span>

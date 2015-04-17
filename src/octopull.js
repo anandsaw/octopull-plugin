@@ -2,7 +2,7 @@ var $ = require('jquery');
 var OctopullView = require('./view.js');
 var OctopullAgent = require('./agent.js');
 
-var agent = new OctopullAgent();
+var agent = OctopullAgent.get();
 var view = new OctopullView();
 
 view.on("loading", function() {
@@ -24,7 +24,6 @@ agent.on("loaded", function() {
 });
 
 agent.on("error", function(error) {
-	view.clear();
 	var message = 'Octopull encountered an error when contacting the server.';
 	var extra = error.text || error.status;
 	if (extra) {
@@ -39,7 +38,6 @@ agent.on("error", function(error) {
 });
 
 agent.on("message", function(message) {
-	view.clear();
 	view.addMessage(message);
 });
 

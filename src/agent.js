@@ -21,13 +21,29 @@ function OctopullAgent() {
 inherits(OctopullAgent, EventEmitter);
 
 OctopullAgent.prototype.navigate = function(url) {
+	this.request({
+		url: url,
+		method: 'GET'
+	});
+}
+
+OctopullAgent.prototype.request = function(settings) {
 	var self = this;
 	
 	if (self._currentRequest !== null) {
 		self._currentRequest.abort();
 		self._currentRequest = null;
 	}
-	var request = $.get(self._host + url);
+	
+	var url = settings.url;
+	if (!url.startsWith('http')) {
+		url = self._host + url;
+	}	
+	var request = $.ajax({
+		url: url,
+		method: settings.method || 'GET',
+		data: settings.data
+	});
 	if (!self._loading) {
 		self._loading = true;
 		self.emit("loading");
@@ -67,6 +83,14 @@ OctopullAgent.prototype._endRequest = function() {
 	if (this._loading) {
 		this._loading = false;
 		this.emit("loaded");
+	}
+}
+
+OctopullAgent.get = function() {
+	if (OctopullAgent._instance) {
+		return OctopullAgent._instance;
+	} else {
+		return (OctopullAgent._instance = new OctopullAgent());
 	}
 }
 
