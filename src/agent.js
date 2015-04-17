@@ -3,7 +3,7 @@ var inherits = require('inherits');
 var EventEmitter = require('eventemitter2').EventEmitter2;
 
 var host = "https://octopull.rmhartog.me/api/";
-// host = "http://localhost:8080/";
+host = "http://localhost:8080/";
 
 function OctopullAgent() {
 	EventEmitter.call(this);
@@ -33,8 +33,8 @@ OctopullAgent.prototype.navigate = function(url) {
 		self._loading = true;
 		self.emit("loading");
 	}
-	self._currentRequest = request;
 
+	self._currentRequest = request;
 	request.then(function(data, textStatus, jqXHR) {
 		if (self._currentRequest == request) {
 			self._parseResponse(jqXHR, data);
@@ -42,6 +42,7 @@ OctopullAgent.prototype.navigate = function(url) {
 		}
 	}, function(jqXHR, textStatus, errorThrown) {
 		if (self._currentRequest == request) {
+			console.log(jqXHR.status);
 			self._parseResponse(jqXHR, null);
 			self._endRequest();
 		}
@@ -54,6 +55,11 @@ OctopullAgent.prototype._parseResponse = function(jqXHR, data) {
 		this.emit("message", data || JSON.parse(jqXHR.responseText));
 	} else if (contentType === "application/vnd.octopull.repository+json") {
 		this.emit("repository", data || JSON.parse(jqXHR.reponseText));
+	} else if (jqXHR.status >= 400 || jqXHR.status <= 0) {
+		this.emit("error", {
+			status: jqXHR.status,
+			text: jqXHR.textStatus
+		});
 	}
 }
 

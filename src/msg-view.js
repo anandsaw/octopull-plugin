@@ -10,7 +10,7 @@ function MessagesViewModel() {
 }
 // end viewmodel
 
-function MessagesView() {
+function MessagesView(parent) {
 	EventEmitter.call(this);
 	var self = this;
 	
@@ -19,7 +19,7 @@ function MessagesView() {
 	templates.get('message-container.html').then(function(template) {
 		var tmpl = $(template);
 		ko.applyBindings(self.viewModel, tmpl.get(0));
-		$(document).find(".header").after(tmpl);
+		$(parent).append(tmpl);
 	});
 }
 inherits(MessagesView, EventEmitter);

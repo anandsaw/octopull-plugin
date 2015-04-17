@@ -9,6 +9,7 @@ var MessagesView = require('./msg-view.js');
 global.$ = $;
 require('jquery.lifecycle');
 require('../libs/arrive.min.js');
+require('jquery-screen-events')($);
 
 function OctopullView() {
 	EventEmitter.call(this);
@@ -81,9 +82,7 @@ OctopullView.prototype.onLoad = function() {
 	this._hookLoader(".page-context-loader");
 	this._hookLoader(".context-loader");
 	
-	this.createDiffView();
-	this.createMessageView();
-	this.createProgressBar();
+	this.createNotificationBar();
 	
 	this._loaded = true;
 	this.emit("load", this.context());
@@ -142,11 +141,17 @@ OctopullView.prototype.context = function() {
 	};
 }
 
-OctopullView.prototype.createDiffView = function() {
-	var diff = $(".files-bucket > #diff").get(0);
-	if (diff) {
-		var context = this.context();
-		this.diffView = new DiffView(diff, context.diff_base, context.diff_head);
+OctopullView.prototype.setRepo = function(repo) {
+	if (repo.diff) {
+		this.createDiffView(repo.diff);
+	}
+}
+
+OctopullView.prototype.createDiffView = function(diff) {
+	var diffElement = $(".files-bucket > #diff").get(0);
+	if (diffElement) {
+		//var context = this.context();
+		this.diffView = new DiffView(diffElement, diff.base, diff.head);
 	}
 }
 
@@ -161,10 +166,29 @@ OctopullView.prototype.clear = function() {
 	this.repoActions.clear();
 }
 
-OctopullView.prototype.createProgressBar = function() {
+OctopullView.prototype.createNotificationBar = function() {
+	var notificationBar = $(".octopull-notificationbar").get(0);
+	if (notificationBar == undefined) {
+		notificationBar = $("<div>").addClass("octopull-notificationbar");
+		$(".header").after(notificationBar);
+	}
+	
+	$.screenoffset.breakpoint(notificationBar.offset().top, 'fixed-notification-bar');
+	$(window).on('screenoffset.fixed-notification-bar', function (evt, breakpoint) {
+		notificationBar.addClass('fixed');
+	});
+	$(window).on('screenoffset.default', function (evt, breakpoint) {
+		notificationBar.removeClass('fixed');
+	});
+	
+	this.createMessageView(notificationBar);
+	this.createProgressBar(notificationBar);
+}
+
+OctopullView.prototype.createProgressBar = function(notificationBar) {
 	if (this._progressBar == null) {
 		this._progressBar = $("<div>").addClass("octopull-loader").prepend($("<div>").addClass("octopull-loader-bar"));
-		$(".header").after(this._progressBar);
+		$(notificationBar).append(this._progressBar);
 	}
 }
 
@@ -176,9 +200,9 @@ OctopullView.prototype.hideProgressBar = function() {
 	this._progressBar.removeClass("loading");
 }
 
-OctopullView.prototype.createMessageView = function() {
+OctopullView.prototype.createMessageView = function(notificationBar) {
 	if (this._msgView == null) {
-		this._msgView = new MessagesView();
+		this._msgView = new MessagesView(notificationBar);
 	}
 }
 

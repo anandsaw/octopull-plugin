@@ -5,7 +5,7 @@
   "author": "Reinier Hartog",
   "permissions": [
     "https://github.com/*",
-    "http://localhost:8080/*",
+	"https://octopull.rmhartog.me/*",
     "storage"
   ],
   "optional_permissions": [

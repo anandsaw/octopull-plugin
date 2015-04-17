@@ -1,3 +1,59 @@
+.octopull-notificationbar.fixed {
+	position: fixed;
+	top: 0px;
+	width: 100%;
+	z-index: 999;
+}
+
+.blob-num {
+	min-width: 60px !important;
+}
+
+.diff-table > colgroup > col:nth-of-type(1),
+.diff-table > colgroup > col:nth-of-type(2) {
+	width: 60px !important;
+}
+
+.violation-menu.select-menu-modal {
+	width: 750px;
+}
+
+.select-menu-item-actions {
+	display:table-cell;
+	vertical-align:top;
+	text-align: right;
+	width: 50px;
+	padding:6px 8px 6px 8px;
+}
+
+.violation-severity {
+	display:table-cell;
+	vertical-align:top;
+	text-align: center;
+	width: 15px;
+	line-height: 22px;
+	padding:6px 8px 6px 8px;
+}
+
+.violations-summary .octicon-primitive-dot,
+.violations-severity-warning .octicon-primitive-dot,
+.violation-severity-warning {
+	color: #cea61b;
+}
+
+.violations-severity-error .octicon-primitive-dot,
+.violation-severity-error {
+	color: #bd2c00;
+}
+
+.violation-tool {
+	display:table-cell;
+	vertical-align:top;
+	text-align: center;
+	width: 125px;
+	padding:6px 8px 6px 8px;
+}
+
 .octopull-message {
 	vertical-align: middle;
 }

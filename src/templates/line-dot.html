@@ -1,0 +1,30 @@
+<span style='float: left; text-align: left;' class="select-menu js-menu-container js-select-menu" data-bind="if: hasWarnings">
+	<a href="#" class="js-menu-target tooltipped tooltipped-e violations-summary" data-bind="css: 'violations-severity-' + worstSeverity(), attr: { 'aria-label': summary }">
+		<span class="octicon octicon-primitive-dot"></span>
+	</a>
+	<div class="select-menu-modal-holder js-menu-content js-navigation-container">
+		<div class="select-menu-modal violation-menu">
+			<div class="select-menu-header">
+				<span class="select-menu-title">Octopull warnings</span>
+				<span class="octicon octicon-remove-close js-menu-close"></span>
+			</div>
+			<ul class="select-menu-list" data-bind="foreach: getWarnings">
+				<li class="select-menu-item">
+					<div class="violation-severity tooltipped tooltipped-e" data-bind="css: 'violation-severity-' + severity(), attr: { 'aria-label': severity }">
+						<span class="octicon octicon-primitive-dot"></span>
+					</div>
+					<span class="select-menu-item-text" data-bind="text: message">
+					</span>
+					<span class="violation-tool">
+						checkstyle
+					</span>
+					<span class="select-menu-item-actions">
+						<a href="#" class="tooltipped tooltipped-w" aria-label="Turn into comment" data-bind="click: comment">
+							<span class="octicon octicon-comment"></span>
+						</a>
+					</span>
+				</li>
+			</ul>
+		</div>
+	</div>
+</span>

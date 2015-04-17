@@ -2,17 +2,36 @@ var $ = require('jquery');
 var ko = require('knockout');
 var inherits = require('inherits');
 var EventEmitter = require('eventemitter2').EventEmitter2;
+var templates = require('templates');
 
 global.$ = $;
 require('../libs/arrive.min.js');
 
 // ** DiffViewModel ** //
+function ViolationViewModel(diff, warning) {
+	var self = this;
+	self.diff = diff;
+	self.warning = warning;
+	
+	self.severity = ko.pureComputed(function() {
+		return 'warning';
+	});
+	
+	self.path = warning.path;
+	self.line = warning.line;
+	self.commit = warning.commit;
+	self.message = warning.message;
+		
+	self.comment = function() {
+		
+	};
+}
+
 function DiffViewModel() {
 	var self = this;
 	self.warnings = ko.observableArray([]);
 	
 	self.warningsForFileLineRevision = function(path, line, rev) {
-		var i = 0;
 		return ko.pureComputed(function() {
 			return ko.utils.arrayFilter(self.warnings(), function(warning) {
 				return warning.path == path && warning.line == line && warning.commit == rev;
@@ -23,13 +42,40 @@ function DiffViewModel() {
 	self.hasWarningsForFileLineRevision = function(path, line, rev) {
 		return ko.pureComputed(function() {
 			var warnings = self.warningsForFileLineRevision(path, line, rev);
-			return ko.unwrap(warnings).length;
+			return ko.unwrap(warnings).length > 0;
 		});
 	}
 }
 
 DiffViewModel.prototype.addWarnings = function(warnings) {
-	this.warnings.push.apply(this.warnings, warnings);
+	var self = this;
+	this.warnings.push.apply(this.warnings, warnings.map(function(warning) {
+		return new ViolationViewModel(self, warning);
+	}));
+}
+
+function DiffLineViewModel(diff, path, line, rev, position) {
+	var self = this;
+	self.diff = diff;
+	
+	self.summary = ko.pureComputed(function() {
+		var warnings = self.getWarnings();
+		var length = ko.unwrap(warnings).length;
+		return length + " warning(s)";
+	});
+	
+	self.worstSeverity = ko.pureComputed(function() {
+		return 'ignore';
+	});
+	
+	self.getWarnings = ko.pureComputed(function() {
+		diff.warningsForFileLineRevision(path, line, rev);
+	});
+		
+	self.hasWarnings = ko.pureComputed(function() {
+		var warnings = self.getWarnings();
+		return ko.unwrap(warnings).length > 0;
+	});
 }
 // ** /DiffViewModel ** //
 
@@ -77,9 +123,12 @@ DiffView.prototype.attach = function() {
 }
 
 DiffView.prototype.prepareRow = function(row, revisions) {
+	var position = $(row).find(".add-line-comment").attr("data-position");
 	$(row).find(".blob-num").each(function(index, blob) {
 		if (index < revisions.length)
 			$(blob).addClass(revisions[index]);
+		if (position !== undefined)
+			$(blob).attr("data-position", position);
 	});
 }
 
@@ -87,7 +136,7 @@ DiffView.prototype.attachLineNumber = function(line, path) {
 	var self = this;
 	
 	var lineNumber = $(line).attr('data-line-number');
-	console.log(lineNumber);
+	var position = $(line).attr('data-position');
 	var rev = null;
 	if ($(line).hasClass('base')) {
 		rev = self._base;
@@ -95,28 +144,11 @@ DiffView.prototype.attachLineNumber = function(line, path) {
 		rev = self._head;
 	}
 	if (rev) {
-		var arguments = JSON.stringify(path) + ", " + JSON.stringify(lineNumber) + ", " + JSON.stringify(rev);
-		
-		$(line).prepend(
-			$("<span style='float: left; text-align: left;'>").addClass("select-menu").addClass("js-menu-container").addClass("js-select-menu").attr("data-bind", "if: hasWarningsForFileLineRevision(" + arguments + ")").append(
-				$("<a href='#'>").addClass("js-menu-target").append($("<span style='line-height: 1.2em'>").addClass("octicon").addClass("octicon-primitive-dot").addClass("text-pending")),
-				$("<div>").addClass("select-menu-modal-holder").addClass("js-menu-content").addClass("js-navigation-container").append(
-					$("<div>").addClass("select-menu-modal").append(
-						$("<div>").addClass("select-menu-header").append(
-							$("<span>").addClass("select-menu-title").append("Warnings"),
-							$("<span>").addClass("octicon").addClass("octicon-remove-close").addClass("js-menu-close")
-						),
-						$("<ul>").addClass("select-menu-list").attr("data-bind", "foreach: warningsForFileLineRevision(" + arguments + ");").append(
-							$("<li>").addClass("select-menu-item").append(
-								$("<span>").addClass("select-menu-item-text").attr("data-bind", "text: message")
-							)
-						)
-					)
-				)
-			)
-		);
+		templates.get('line-dot.html').then(function(template) {
+			$(line).prepend($(template));
+			ko.applyBindings(new DiffLineViewModel(self._viewModel, path, lineNumber, rev, position), line);
+		});
 	}
-	ko.applyBindings(self._viewModel, line);
 }
 
 DiffView.prototype.remove = function() {
