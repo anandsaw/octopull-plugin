@@ -1,0 +1,7 @@
+.show-octopull-installed {
+	display: inline !important;
+}
+
+.show-octopull-not-installed {
+	display: none !important;
+}

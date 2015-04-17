@@ -1,11 +1,11 @@
 {
   "name": "Octopull",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "manifest_version": 2,
   "author": "Reinier Hartog",
   "permissions": [
     "https://github.com/*",
-	"https://octopull.rmhartog.me/*",
+    "https://octopull.rmhartog.me/*",
     "storage"
   ],
   "optional_permissions": [
@@ -23,6 +23,14 @@
         "octopull.js"
       ],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://octopull.rmhartog.me/*"
+      ],
+      "css": [
+        "extension_installed.css"
+      ]
     }
   ],
   "web_accessible_resources": [

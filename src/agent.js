@@ -3,7 +3,6 @@ var inherits = require('inherits');
 var EventEmitter = require('eventemitter2').EventEmitter2;
 
 var host = "https://octopull.rmhartog.me/api/";
-host = "http://localhost:8080/";
 
 function OctopullAgent() {
 	EventEmitter.call(this);
