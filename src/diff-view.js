@@ -10,9 +10,9 @@ global.$ = $;
 require('../libs/arrive.min.js');
 
 // ** DiffViewModel ** //
-function ViolationViewModel(diff, warning) {
+function ViolationViewModel(diffVM, warning) {
 	var self = this;
-	self.diff = diff;
+	self.diff = diffVM.diff;
 	self.warning = warning;
 	
 	self.severity = ko.pureComputed(function() {
@@ -26,13 +26,13 @@ function ViolationViewModel(diff, warning) {
 		
 	self.comment = function() {
 		agent.request({
-			url: diff.createCommentURL,
+			url: self.diff.createCommentURL,
 			method: 'POST',
 			data: {
-					repo: diff.repo,
-					pullRequest: diff.pullRequestNumber,
+					repo: self.diff.repo.id,
+					pullRequest: self.diff.repo.pullRequestNumber,
 					commit: warning.commit,
-					warningId: warning.warningId,
+					warningId: warning.id,
 					position: warning.position
 			}
 		});
@@ -41,7 +41,7 @@ function ViolationViewModel(diff, warning) {
 
 function DiffViewModel(diff) {
 	var self = this;
-	self.createCommentURL = diff.createCommentURL;
+	self.diff = diff;
 	self.warnings = ko.observableArray([]);
 	self.addWarnings(diff.warnings);
 	
@@ -83,7 +83,10 @@ function DiffLineViewModel(diff, path, line, rev, position) {
 	});
 	
 	self.getWarnings = ko.pureComputed(function() {
-		return diff.warningsForFileLineRevision(path, line, rev)();
+		return diff.warningsForFileLineRevision(path, line, rev)().map(function(warning) {
+			warning.warning.position = position;
+			return warning;
+		});
 	});
 		
 	self.hasWarnings = ko.pureComputed(function() {

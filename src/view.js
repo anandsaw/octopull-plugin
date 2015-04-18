@@ -143,6 +143,7 @@ OctopullView.prototype.context = function() {
 
 OctopullView.prototype.setRepo = function(repo) {
 	if (repo.diff) {
+		repo.diff.repo = repo;
 		this.createDiffView(repo.diff);
 	}
 }
