@@ -19,6 +19,7 @@ module.exports = function(grunt) {
 				files: [
 					{ expand: true, cwd: 'src/chrome/', src: ['manifest.json'], dest: 'tmp/chrome/', filter: 'isFile' },
 					{ expand: true, cwd: 'src/', src: ['templates/**'], dest: 'tmp/chrome/', filter: 'isFile' },
+					{ expand: true, cwd: 'src/chrome/', src: ['options.html', 'options.js'], dest: 'tmp/chrome/', filter: 'isFile' },
 					{ expand: true, cwd: 'src/', src: ['**.css'], dest: 'tmp/chrome/', filter: 'isFile' }
 				]
 			}
@@ -26,7 +27,7 @@ module.exports = function(grunt) {
 		browserify: {
 			chrome: {
 				options: {
-					require: [ './src/chrome/templates.js:templates' ]
+					require: [ './src/chrome/templates.js:templates', './src/chrome/settings.js:settings' ]
 				},
 				files: {
 					'tmp/chrome/octopull.js': ['./src/octopull.js']

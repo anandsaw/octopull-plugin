@@ -11,6 +11,10 @@
   "optional_permissions": [
     "<all_urls>"
   ],
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  },
   "content_scripts": [
     {
       "matches": [
