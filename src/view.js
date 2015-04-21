@@ -143,6 +143,7 @@ OctopullView.prototype.context = function() {
 
 OctopullView.prototype.setRepo = function(repo) {
 	if (repo.diff) {
+		repo.diff.repo = repo;
 		this.createDiffView(repo.diff);
 	}
 }
@@ -150,8 +151,7 @@ OctopullView.prototype.setRepo = function(repo) {
 OctopullView.prototype.createDiffView = function(diff) {
 	var diffElement = $(".files-bucket > #diff").get(0);
 	if (diffElement) {
-		//var context = this.context();
-		this.diffView = new DiffView(diffElement, diff.base, diff.head);
+		this.diffView = new DiffView(diffElement, diff);
 	}
 }
 
@@ -164,11 +164,17 @@ OctopullView.prototype.removeDiffView = function() {
 
 OctopullView.prototype.clear = function() {
 	this.repoActions.clear();
+	if (this._msgView) {
+		this._msgView.clear();
+	}
+	if (this.diffView) {
+		this.diffView.clear();
+	}
 }
 
 OctopullView.prototype.createNotificationBar = function() {
-	var notificationBar = $(".octopull-notificationbar").get(0);
-	if (notificationBar == undefined) {
+	var notificationBar = $(".octopull-notificationbar");
+	if (notificationBar.get(0) == undefined) {
 		notificationBar = $("<div>").addClass("octopull-notificationbar");
 		$(".header").after(notificationBar);
 	}

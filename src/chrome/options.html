@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Octopull Options</title>
+  <style>
+    body { padding: 10px; }
+	#status { font-style: italic; }
+	.note {
+		display: block;
+		padding: 10px;
+	}
+  </style>
+</head>
+
+<body>
+  <label>
+    <input type="checkbox" id="staging">
+    connect to staging environment.
+  </label>
+  <span class="note">
+  <i>Note:</i> only set this option when debugging with the developer, the staging environment may be modified at any time.
+  </span>
+
+  <div id="status"></div>
+  <br/>
+  <button id="save">Save</button>
+
+  <script src="options.js"></script>
+</body>
+</html>

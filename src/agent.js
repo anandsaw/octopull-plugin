@@ -1,8 +1,7 @@
 var $ = require('jquery');
 var inherits = require('inherits');
 var EventEmitter = require('eventemitter2').EventEmitter2;
-
-var host = "https://octopull.rmhartog.me/api/";
+var settings = require('settings');
 
 function OctopullAgent() {
 	EventEmitter.call(this);
@@ -14,38 +13,62 @@ function OctopullAgent() {
 		}
 	});
 	
-	self._host = host;
+	self._host = settings.get('environment', 'production').then(function(env) {
+		if (env == "staging") {
+			return "https://octopull.rmhartog.me/staging/";
+		} else {
+			return "https://octopull.rmhartog.me/api/";
+		}
+	});
 	self._currentRequest = null;
 	self._loading = false;
 }
 inherits(OctopullAgent, EventEmitter);
 
 OctopullAgent.prototype.navigate = function(url) {
+	this.request({
+		url: url,
+		method: 'GET'
+	});
+}
+
+OctopullAgent.prototype.request = function(settings) {
 	var self = this;
 	
-	if (self._currentRequest !== null) {
-		self._currentRequest.abort();
-		self._currentRequest = null;
-	}
-	var request = $.get(self._host + url);
-	if (!self._loading) {
-		self._loading = true;
-		self.emit("loading");
-	}
+	self._host.then(function(host) {
+		if (self._currentRequest !== null) {
+			self._currentRequest.abort();
+			self._currentRequest = null;
+		}
+		
+		var url = settings.url;
+		if (!url.startsWith('http')) {
+			url = host + url;
+		}	
+		var request = $.ajax({
+			url: url,
+			method: settings.method || 'GET',
+			data: settings.data
+		});
+		if (!self._loading) {
+			self._loading = true;
+			self.emit("loading");
+		}
 
-	self._currentRequest = request;
-	request.then(function(data, textStatus, jqXHR) {
-		if (self._currentRequest == request) {
-			self._parseResponse(jqXHR, data);
-			self._endRequest();
-		}
-	}, function(jqXHR, textStatus, errorThrown) {
-		if (self._currentRequest == request) {
-			console.log(jqXHR.status);
-			self._parseResponse(jqXHR, null);
-			self._endRequest();
-		}
-	});
+		self._currentRequest = request;
+		request.then(function(data, textStatus, jqXHR) {
+			if (self._currentRequest == request) {
+				self._parseResponse(jqXHR, data);
+				self._endRequest();
+			}
+		}, function(jqXHR, textStatus, errorThrown) {
+			if (self._currentRequest == request) {
+				console.log(jqXHR.status);
+				self._parseResponse(jqXHR, null);
+				self._endRequest();
+			}
+		});
+	}).done();
 }
 
 OctopullAgent.prototype._parseResponse = function(jqXHR, data) {
@@ -67,6 +90,14 @@ OctopullAgent.prototype._endRequest = function() {
 	if (this._loading) {
 		this._loading = false;
 		this.emit("loaded");
+	}
+}
+
+OctopullAgent.get = function() {
+	if (OctopullAgent._instance) {
+		return OctopullAgent._instance;
+	} else {
+		return (OctopullAgent._instance = new OctopullAgent());
 	}
 }
 
