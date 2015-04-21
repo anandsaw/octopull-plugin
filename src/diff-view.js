@@ -23,6 +23,7 @@ function ViolationViewModel(diffVM, warning) {
 	self.line = warning.line;
 	self.commit = warning.commit;
 	self.message = warning.message;
+	self.tool = warning.tool;
 		
 	self.comment = function() {
 		agent.request({
