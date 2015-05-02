@@ -45,3 +45,9 @@ agent.on("repository", function(repo) {
 	view.clear();
 	view.setRepo(repo);
 });
+
+agent.on("created", function(created) {
+	if (created.location) {
+		window.location.assign(created.location);
+	}
+});

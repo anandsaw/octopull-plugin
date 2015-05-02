@@ -23,7 +23,10 @@ function ViolationViewModel(diffVM, warning) {
 	self.line = warning.line;
 	self.commit = warning.commit;
 	self.message = warning.message;
-		
+	
+	self.canComment = ko.computed(function() {
+		return self.diff.createCommentURL && warning.commit == self.diff.head;
+	});
 	self.comment = function() {
 		agent.request({
 			url: self.diff.createCommentURL,

@@ -72,13 +72,27 @@ OctopullAgent.prototype.request = function(settings) {
 }
 
 OctopullAgent.prototype._parseResponse = function(jqXHR, data) {
+	var self = this;
+	
 	var contentType = jqXHR.getResponseHeader("Content-Type");
+	var location = jqXHR.getResponseHeader("Location");
 	if (contentType === "application/vnd.octopull.message+json") {
-		this.emit("message", data || JSON.parse(jqXHR.responseText));
+		self.emit("message", data || JSON.parse(jqXHR.responseText));
 	} else if (contentType === "application/vnd.octopull.repository+json") {
-		this.emit("repository", data || JSON.parse(jqXHR.reponseText));
+		self.emit("repository", data || JSON.parse(jqXHR.reponseText));
+	} else if (jqXHR.status == 201 && location) {
+		console.log("HRM?");
+		self._host.then(function(host) {
+			if (location.startsWith(host)) {
+				self.navigate(location);
+			} else {
+				self.emit("created", {
+					location: location
+				});
+			}
+		});
 	} else if (jqXHR.status >= 400 || jqXHR.status <= 0) {
-		this.emit("error", {
+		self.emit("error", {
 			status: jqXHR.status,
 			text: jqXHR.textStatus
 		});
