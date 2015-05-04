@@ -71,6 +71,20 @@ OctopullAgent.prototype.request = function(settings) {
 	}).done();
 }
 
+OctopullAgent.prototype.sendStatistics = function(statistics) {
+	var self = this;
+	
+	self._host.then(function(host) {
+		var url = host + "statistics";
+		var request = $.ajax({
+			url: url,
+			method: 'POST',
+			data: JSON.stringify(statistics),
+			contentType: "application/json"
+		});
+	}).done();
+}
+
 OctopullAgent.prototype._parseResponse = function(jqXHR, data) {
 	var self = this;
 	

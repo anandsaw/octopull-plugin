@@ -4,6 +4,21 @@ var OctopullAgent = require('./agent.js');
 
 var agent = OctopullAgent.get();
 var view = new OctopullView();
+var statisticsTimeout = null;
+
+function updateStatistics(screen) {
+	clearTimeout(statisticsTimeout);
+	
+	var statistics = {
+		href: window.location.href,
+		screen: screen || {}
+	};
+	agent.sendStatistics(statistics);
+	
+	setTimeout(function() {
+		updateStatistics(view.context());
+	}, 60000);
+}
 
 view.on("loading", function() {
 	view.repoActions.clear();
@@ -13,6 +28,12 @@ view.on("load", function(screen) {
 	if (screen.owner && screen.repository && screen.pull_request && screen.diff_base && screen.diff_head) {
 		agent.navigate("repos/" + screen.owner + "/" + screen.repository + "/pulls/" + screen.pull_request + "/diff/" + screen.diff_base + "/" + screen.diff_head);
 	}
+
+	updateStatistics(screen);
+});
+
+view.on("update-tab", function() {
+	updateStatistics(view.context());
 });
 
 agent.on("loading", function() {

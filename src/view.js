@@ -79,13 +79,18 @@ OctopullView.prototype._hookLoader = function(query) {
 }
 
 OctopullView.prototype.onLoad = function() {
-	this._hookLoader(".page-context-loader");
-	this._hookLoader(".context-loader");
+	var self = this;
 	
-	this.createNotificationBar();
+	self._hookLoader(".page-context-loader");
+	self._hookLoader(".context-loader");
+	$(document).arrive(".tabnav-tab.selected", {fireOnAttributesModification: true}, function() {
+		self.emit("update-tab");
+	});
 	
-	this._loaded = true;
-	this.emit("load", this.context());
+	self.createNotificationBar();
+	
+	self._loaded = true;
+	self.emit("load", self.context());
 }
 
 OctopullView.prototype.onLoading = function() {
