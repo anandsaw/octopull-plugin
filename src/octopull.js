@@ -26,6 +26,7 @@ view.on("loading", function() {
 
 view.on("load", function(screen) {	
 	if (screen.owner && screen.repository && screen.pull_request && screen.diff_base && screen.diff_head) {
+		view.clear();
 		agent.navigate("repos/" + screen.owner + "/" + screen.repository + "/pulls/" + screen.pull_request + "/diff/" + screen.diff_base + "/" + screen.diff_head);
 	}
 

@@ -33,7 +33,7 @@ MessagesView.prototype.addMessage = function(message) {
 }
 
 MessagesView.prototype.clear = function() {
-	
+	this.viewModel.messages([]);
 }
 
 module.exports = MessagesView;

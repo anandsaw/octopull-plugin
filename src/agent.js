@@ -34,13 +34,13 @@ OctopullAgent.prototype.navigate = function(url) {
 
 OctopullAgent.prototype.request = function(settings) {
 	var self = this;
+
+	if (self._currentRequest !== null) {
+		self._currentRequest.abort();
+		self._currentRequest = null;
+	}
 	
-	self._host.then(function(host) {
-		if (self._currentRequest !== null) {
-			self._currentRequest.abort();
-			self._currentRequest = null;
-		}
-		
+	self._host.then(function(host) {		
 		var url = settings.url;
 		if (!url.startsWith('http')) {
 			url = host + url;
