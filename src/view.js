@@ -107,7 +107,7 @@ OctopullView.prototype.context = function() {
 	var diff_base = null;
 	var diff_head = null;
 	
-	var repo = $(".js-current-repository").first().attr("href");
+	var repo = $(".js-current-repository").first().attr("href") || $("a[data-pjax='#js-repo-pjax-container']").first().attr("href");
 	if (repo) {
 		var match = /^\/([^\/]+)\/([^\/]+)$/.exec(repo);
 		if (match !== null) {
