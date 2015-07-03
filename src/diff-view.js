@@ -22,6 +22,7 @@ function ViolationViewModel(diffVM, warning) {
 	self.path = warning.path;
 	self.line = warning.line;
 	self.commit = warning.commit;
+	self.tool = warning.tool;
 	self.message = warning.message;
 	
 	self.canComment = ko.computed(function() {
