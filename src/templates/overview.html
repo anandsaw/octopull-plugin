@@ -1,0 +1,41 @@
+<div class="select-menu js-menu-container js-select-menu left" style="position: fixed; right: 25px; bottom: 25px; z-index: 99;" data-bind="visible: warnings().length > 0">
+    <span class="js-menu-target btn-link tooltipped tooltipped-w" aria-label="Octopull overview">
+      <span class="mega-octicon octicon-diff-modified" style="color: rgb(204, 204, 204);"></span>
+    </span>
+    <div class="select-menu-modal-holder js-menu-content js-navigation-container" style="right: 0px; bottom: 25px;">
+        <div class="select-menu-modal" style="width: 500px;">
+            <div class="select-menu-header"><span class="select-menu-title">Octopull overview</span></div>
+            <div class="select-menu-filters">
+                <div class="select-menu-tabs">
+                    <ul>
+                        <li class="select-menu-tab"><a data-bind="click: function() { activeTab('filters') }, css: { selected: activeTab() == 'filters' }">Filters</a></li>
+                        <li class="select-menu-tab"><a data-bind="click: function() { activeTab('warnings') }, css: { selected: activeTab() == 'warnings' }">Warnings (<span data-bind="text: selectedWarnings().length"></span>)</a></li>
+                    </ul>
+                </div>
+            </div>
+            <ul class="select-menu-list" data-bind="visible: activeTab() == 'filters'">
+              <!-- ko foreach: tools -->
+              <li class="select-menu-item" data-bind="click: function() { active(!active()) }">
+                <span class="select-menu-item-text"><span class="octicon octicon-primitive-dot" data-bind="visible: active"></span>&nbsp;<span data-bind="text: name"></span> (<span data-bind="text: $parent.warningsForTool(name)().length"></span>)</span>
+              </li>
+              <!-- /ko -->
+            </ul>
+            <ul class="select-menu-list" data-bind="foreach: selectedWarnings, visible: activeTab() == 'warnings'">
+              <li class="select-menu-item">
+                <div class="violation-severity tooltipped tooltipped-e violation-severity-warning" aria-label="warning">
+                  <span class="octicon octicon-primitive-dot"></span>
+                </div>
+                <span class="select-menu-item-text"><span data-bind="text: message"></span> : <span data-bind="text: line"></span></span>
+                <span class="select-menu-item-text" data-bind="text: path"></span>
+                <span class="violation-tool" data-bind="text: tool"></span>
+                <span class="select-menu-item-actions">
+                  <a class="tooltipped tooltipped-w" aria-label="Go to line" data-bind="attr: { href: $parent.href(path, line, commit) }"><span class="octicon octicon-chevron-right"></span></a>
+                  <!--<a href="#" class="tooltipped tooltipped-w" aria-label="Turn into comment" data-bind="if: canComment, click: comment">
+                    <span class="octicon octicon-comment"></span>
+                  </a>-->
+                </span>
+              </li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -67,7 +67,7 @@ OctopullAgent.prototype.request = function(settings) {
 				self._parseResponse(jqXHR, null);
 				self._endRequest();
 			}
-		});
+		}).done();
 	}).done();
 }
 
