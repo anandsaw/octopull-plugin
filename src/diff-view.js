@@ -4,15 +4,17 @@ var inherits = require('inherits');
 var EventEmitter = require('eventemitter2').EventEmitter2;
 var templates = require('templates');
 
+var overview = require('./overview-view.js').get();
+
 var agent = require('./agent.js').get();
 
 global.$ = $;
 require('../libs/arrive.min.js');
 
 // ** DiffViewModel ** //
-function ViolationViewModel(diffVM, warning) {
+function ViolationViewModel(diff, warning) {
 	var self = this;
-	self.diff = diffVM.diff;
+	self.diff = diff;
 	self.warning = warning;
 	
 	self.severity = ko.pureComputed(function() {
@@ -33,11 +35,11 @@ function ViolationViewModel(diffVM, warning) {
 			url: self.diff.createCommentURL,
 			method: 'POST',
 			data: {
-					repo: self.diff.repo.id,
-					pullRequest: self.diff.repo.pullRequestNumber,
-					commit: warning.commit,
-					warningId: warning.id,
-					position: warning.position
+				repo: self.diff.repo.id,
+				pullRequest: self.diff.repo.pullRequestNumber,
+				commit: warning.commit,
+				warningId: warning.id,
+				position: warning.position
 			}
 		});
 	};
@@ -46,8 +48,14 @@ function ViolationViewModel(diffVM, warning) {
 function DiffViewModel(diff) {
 	var self = this;
 	self.diff = diff;
-	self.warnings = ko.observableArray([]);
-	self.addWarnings(diff.warnings);
+	//self.warnings = ko.observableArray([]);
+	//self.addWarnings(diff.warnings);
+	
+	self.warnings = ko.computed(function() {
+		return overview.viewModel.selectedWarnings().map(function(warning) {
+			return new ViolationViewModel(self.diff, warning);
+		});
+	});
 	
 	self.warningsForFileLineRevision = function(path, line, rev) {
 		return ko.pureComputed(function() {
@@ -65,12 +73,12 @@ function DiffViewModel(diff) {
 	}
 }
 
-DiffViewModel.prototype.addWarnings = function(warnings) {
+/*DiffViewModel.prototype.addWarnings = function(warnings) {
 	var self = this;
 	this.warnings.push.apply(this.warnings, warnings.map(function(warning) {
 		return new ViolationViewModel(self, warning);
 	}));
-}
+}*/
 
 function DiffLineViewModel(diff, path, line, rev, position) {
 	var self = this;
@@ -175,7 +183,7 @@ DiffView.prototype.attachLineNumber = function(line, path) {
 }
 
 DiffView.prototype.clear = function() {
-	this._viewModel.warnings([]);
+	//this._viewModel.warnings([]);
 }
 
 DiffView.prototype.remove = function() {

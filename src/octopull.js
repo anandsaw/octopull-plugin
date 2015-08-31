@@ -2,6 +2,8 @@ var $ = require('jquery');
 var OctopullView = require('./view.js');
 var OctopullAgent = require('./agent.js');
 
+var overview = require('./overview-view.js').get(); // make sure it is created
+
 var agent = OctopullAgent.get();
 var view = new OctopullView();
 var statisticsTimeout = null;
@@ -22,6 +24,7 @@ function updateStatistics(screen) {
 
 view.on("loading", function() {
 	view.repoActions.clear();
+	overview.viewModel.warnings([]);
 });
 
 view.on("load", function(screen) {	
@@ -66,6 +69,11 @@ agent.on("message", function(message) {
 agent.on("repository", function(repo) {
 	view.clear();
 	view.setRepo(repo);
+  console.log(repo);
+  
+  overview.viewModel.warnings(repo.diff.warnings);
+  overview.viewModel.baseCommit(repo.diff.base);
+  overview.viewModel.headCommit(repo.diff.head);
 });
 
 agent.on("created", function(created) {
